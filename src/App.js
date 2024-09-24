@@ -13,11 +13,11 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 
 const App = () => {
   return (
-    <AuthProvider> {/* Wrap your application with AuthProvider */}
+    <AuthProvider>
       <Router>
         <div className="app-container">
-          <div className="content-wrap">
-            <Header />
+          <Header />
+          <main className="content-wrap">
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/auctions" element={<Auctions />} />
@@ -25,7 +25,7 @@ const App = () => {
               <Route path="/login" element={<Login />} />
               <Route path="/register" element={<Register />} />
             </Routes>
-          </div>
+          </main>
           <Footer />
         </div>
       </Router>

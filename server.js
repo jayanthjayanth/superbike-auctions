@@ -93,6 +93,19 @@ app.post('/api/login', async (req, res) => {
   }
 });
 
+// Auctions endpoint
+app.get('/api/auctions', async (req, res) => {
+  try {
+    const [auctions] = await db.promise().query('SELECT * FROM auctions');
+    console.log('Fetched auctions:', auctions); // Log the fetched data
+    res.json(auctions);
+  } catch (error) {
+    console.error('Error fetching auctions:', error);
+    res.status(500).json({ success: false, message: 'Error fetching auctions' });
+  }
+});
+
+
 // Start the server
 app.listen(port, () => {
   console.log(`Server running on http://localhost:${port}`);
