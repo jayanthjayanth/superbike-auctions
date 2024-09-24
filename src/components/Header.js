@@ -1,21 +1,35 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useContext } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { AuthContext } from '../AuthContext';
 import './Header.css';
 
 const Header = () => {
+  const { auth, logout } = useContext(AuthContext);
+  const location = useLocation();
+
   return (
-    <header className="header">
+    <header>
       <div className="logo">
         <h1>Superbike Auctions</h1>
       </div>
-      <nav>
-        <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/auctions">Auctions</Link></li>
-          <li><Link to="/about">About</Link></li>
-          <li><Link to="/login">Login</Link></li>
-          <li><Link to="/register">Register</Link></li>
-        </ul>
+      <nav className="nav-links">
+        <Link to="/">Home</Link>
+        <Link to="/auctions">Auctions</Link>
+      </nav>
+      <nav className="auth-section">
+        {auth.loggedIn ? (
+          <>
+            <span className="username">Welcome, {auth.username}</span>
+            <button className="logout-button" onClick={logout}>Logout</button>
+          </>
+        ) : (
+          location.pathname === '/' && (
+            <>
+              <Link to="/login">Login</Link>
+              <Link to="/register">Register</Link>
+            </>
+          )
+        )}
       </nav>
     </header>
   );

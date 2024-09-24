@@ -1,11 +1,16 @@
-import React, { useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../AuthContext';
 import './Login.css';
 
 const Login = () => {
   const navigate = useNavigate();
-  const { setAuth, checkSession } = useContext(AuthContext);
+  const { setAuth } = useContext(AuthContext);
+  const [error, setError] = useState(null);
+
+  const handleRegisterClick = () => {
+    navigate('/register');
+  };
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -20,18 +25,18 @@ const Login = () => {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data),
-        credentials: 'include'
       });
 
       const result = await response.json();
       if (result.success) {
-        await checkSession();
+        setAuth({ loggedIn: true, username: result.user.username });
         navigate('/');
       } else {
-        // Handle login error
+        setError(result.message || 'Invalid username or password');
       }
-    } catch (error) {
-      console.error('Login error:', error);
+    } catch (err) {
+      console.error('Error logging in:', err);
+      setError('Error logging in. Please try again.');
     }
   };
 
@@ -43,8 +48,9 @@ const Login = () => {
           <input type="text" name="username" placeholder="Username" required />
           <input type="password" name="password" placeholder="Password" required />
           <button type="submit">Login</button>
+          {error && <p style={{ color: 'red' }}>{error}</p>}
           <div className="bottom-link">
-            Don't have an account? <button onClick={() => navigate('/register')} className="link-button">Register</button>
+            Don't have an account? <button onClick={handleRegisterClick} className="link-button">Register</button>
           </div>
         </form>
       </div>
