@@ -1,0 +1,31 @@
+.auctions {
+  padding: 2rem;
+  text-align: center;
+}
+
+.auction-list {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.auction-card {
+  margin: 20px;
+  padding: 20px;
+  border: 1px solid #ddd;
+  border-radius: 5px;
+  background-color: #fff;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 250px;
+  text-align: left;
+}
+
+.auction-card h2 {
+  font-size: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.auction-card p {
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}
