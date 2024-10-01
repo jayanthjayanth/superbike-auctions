@@ -13,8 +13,8 @@ app.use(express.json());
 // Database connection
 const db = mysql.createConnection({
   host: 'localhost',
-  user: 'root',
-  password: 'root',
+  user: 'root', 
+  password: 'root', 
   database: 'superbike_auctions',
 });
 
@@ -75,7 +75,7 @@ app.post('/api/login', async (req, res) => {
     }
 
     const user = users[0];
-    console.log('Retrieved user:', user); // Log the user object
+    console.log('Retrieved user:', user);
 
     // Compare the provided password with the stored hashed password
     const isMatch = await bcrypt.compare(password, user.password);
@@ -97,7 +97,7 @@ app.post('/api/login', async (req, res) => {
 app.get('/api/auctions', async (req, res) => {
   try {
     const [auctions] = await db.promise().query('SELECT * FROM auctions');
-    console.log('Fetched auctions:', auctions); // Log the fetched data
+    console.log('Fetched auctions:', auctions);
     res.json(auctions);
   } catch (error) {
     console.error('Error fetching auctions:', error);
@@ -105,6 +105,49 @@ app.get('/api/auctions', async (req, res) => {
   }
 });
 
+// Endpoint to handle bids
+app.post('/api/auctions/:auctionId/bid', async (req, res) => {
+  console.log('Placing bid on auction', req.params.auctionId);
+  try {
+    // Start a transaction
+    await db.promise().beginTransaction();
+
+    // Get the current auction details
+    const [auctions] = await db.promise().query(
+      'SELECT * FROM auctions WHERE id = ?',
+      [req.params.auctionId]
+    );
+
+    if (auctions.length === 0) {
+      await db.promise().rollback();
+      return res.status(404).json({ success: false, message: 'Auction not found' });
+    }
+
+    const auction = auctions[0];
+
+    // Check if the bid is higher than the current bid
+    if (req.body.bidAmount <= auction.current_bid) {
+      await db.promise().rollback();
+      return res.status(400).json({ success: false, message: 'Bid must be higher than the current bid' });
+    }
+
+    // Update the auction with the new bid
+    await db.promise().query(
+      'UPDATE auctions SET current_bid = ?, last_bidder = ? WHERE id = ?',
+      [req.body.bidAmount, req.body.username, req.params.auctionId]
+    );
+
+    // Commit the transaction
+    await db.promise().commit();
+
+    console.log('Bid placed successfully');
+    res.json({ success: true, message: 'Bid placed successfully', currentBid: req.body.bidAmount });
+  } catch (error) {
+    console.error('Error placing bid:', error);
+    await db.promise().rollback();
+    res.status(500).json({ success: false, message: 'Error placing bid' });
+  }
+});
 
 // Start the server
 app.listen(port, () => {

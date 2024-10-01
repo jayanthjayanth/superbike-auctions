@@ -21,23 +21,29 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const logout = async () => {
+  const placeBid = async (auctionId, bidAmount) => {
+    if (!auth.loggedIn) {
+      return { success: false, message: 'You must be logged in to place a bid.' };
+    }
+  
     try {
-      const response = await fetch('http://localhost:3001/api/logout', {
+      const response = await fetch(`http://localhost:3001/api/auctions/${auctionId}/bid`, {
         method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ username: auth.username, bidAmount }),
         credentials: 'include'
       });
-      const data = await response.json();
-      if (data.success) {
-        setAuth({ loggedIn: false, username: null });
-      }
+  
+      const result = await response.json();
+      return result;
     } catch (error) {
-      console.error('Logout error:', error);
+      console.error('Error placing bid:', error);
+      return { success: false, message: 'An error occurred while placing the bid.' };
     }
   };
 
   return (
-    <AuthContext.Provider value={{ auth, setAuth, checkSession, logout }}>
+    <AuthContext.Provider value={{ auth, setAuth, checkSession, placeBid }}>
       {children}
     </AuthContext.Provider>
   );
