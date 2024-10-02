@@ -3,7 +3,7 @@ import { createApi } from 'unsplash-js';
 import './AuctionCard.css';
 
 const unsplash = createApi({
-  accessKey: 'RAQVmqCojsFO9O5pMdwSeplyid6iv7yaD9huZevxq24',
+  accessKey: 'ENTER_API_KEY_HERE',
 });
 
 const AuctionCard = ({ auction, onBidClick }) => {
